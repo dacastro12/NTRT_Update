@@ -17,14 +17,14 @@
 */
 
 /**
- * @file DCModel.cpp
+ * @file DC1_2Model.cpp
  * @brief Contains the definition of the members of the class ControlTFModel.
  *	Model is inspired by Tom Flemmons tensegrity model of the knee and is a working progress.
  * $Id$
  */
 
 // This module
-#include "DCModel.h"
+#include "DC1_2Model.h"
 // This library
 #include "core/tgRod.h"
 //#include "core/tgSphere.h"
@@ -88,16 +88,16 @@ namespace
   };
 } // namespace
 
-DCModel::DCModel() :
+DC1_2Model::DC1_2Model() :
 tgModel()
 {
 }
 
-DCModel::~DCModel()
+DC1_2Model::~DC1_2Model()
 {
 }
 
-void DCModel::addNodes(tgStructure& tetra,
+void DC1_2Model::addNodes(tgStructure& tetra,
                             double edge,
                             double width,
                             double height)
@@ -158,7 +158,7 @@ void DCModel::addNodes(tgStructure& tetra,
 
 }
 
-/*void DCModel::addNodesB(tgStructure& tetra,
+/*void DC1_2Model::addNodesB(tgStructure& tetra,
                             double edge,
                             double width,
                             double height)
@@ -184,7 +184,7 @@ void DCModel::addNodes(tgStructure& tetra,
     tetra.addNode(-0.6, -5, -0.6); //8
 }
 */
-void DCModel::addPairs(tgStructure& tetra)
+void DC1_2Model::addPairs(tgStructure& tetra)
 {
 //fibula and tibia
 	//Bottom Base or Ankle
@@ -229,7 +229,7 @@ void DCModel::addPairs(tgStructure& tetra)
 	
 }
 
-/*void DCModel::addPairsB(tgStructure& tetra)
+/*void DC1_2Model::addPairsB(tgStructure& tetra)
 {
 //Holding Structure (Massless)
 	//Bottom
@@ -244,7 +244,7 @@ void DCModel::addPairs(tgStructure& tetra)
     tetra.addPair( 3,  1, "rodB");
 }
 */
-void DCModel::addMuscles(tgStructure& tetra)
+void DC1_2Model::addMuscles(tgStructure& tetra)
 {
 //Tibia and Fibia Section
 	//Calve
@@ -288,12 +288,12 @@ void DCModel::addMuscles(tgStructure& tetra)
 }
 
 
-void DCModel::setup(tgWorld& world)
+void DC1_2Model::setup(tgWorld& world)
 {
     // Define the configurations of the rods and strings
     // Note that pretension is defined for this string
-    const tgRod::Config rodConfigA(c.radiusA, c.densityA, c.friction, c.rollFriction, c.restitution);
-    const tgRod::Config rodConfigB(c.radiusB, c.densityB, c.friction, c.rollFriction, c.restitution);//Massless rods for base holder
+    const tgRod::Config roDC1_2onfigA(c.radiusA, c.densityA, c.friction, c.rollFriction, c.restitution);
+    const tgRod::Config roDC1_2onfigB(c.radiusB, c.densityB, c.friction, c.rollFriction, c.restitution);//Massless rods for base holder
     const tgBasicActuator::Config muscleConfig(c.stiffness, c.damping, c.pretension);
     //welding holders
    // const tgSphere::Config weldingConfigA(0.25, c.densityA);
@@ -309,7 +309,7 @@ void DCModel::setup(tgWorld& world)
 
     //child (Taken out for massless femur)
   //  tgStructure* const tB = new tgStructure(tetraB);
-  //  tetra.addChild(tB);
+  //  tetra.adDC1_2hild(tB);
 	
     // Add nodes to the structure
     addNodes(tetra, c.triangle_length, c.triangle_height, c.Knee_height);
@@ -325,8 +325,8 @@ void DCModel::setup(tgWorld& world)
 
     // Create the build spec that uses tags to turn the structure into a real model
     tgBuildSpec spec;
-    spec.addBuilder("rodB", new tgRodInfo(rodConfigB));    
-    spec.addBuilder("rod", new tgRodInfo(rodConfigA));
+    spec.addBuilder("rodB", new tgRodInfo(roDC1_2onfigB));    
+    spec.addBuilder("rod", new tgRodInfo(roDC1_2onfigA));
     spec.addBuilder("muscle", new tgBasicActuatorInfo(muscleConfig));
     spec.addBuilder("gastro", new tgBasicActuatorInfo(muscleConfig));
     //spec.addBuilder("GastMedial", new tgBasicActuatorInfo(muscleConfig));
@@ -352,7 +352,7 @@ void DCModel::setup(tgWorld& world)
     tgModel::setup(world);
 }
 
-void DCModel::step(double dt)
+void DC1_2Model::step(double dt)
 {
     // Precondition
     if (dt <= 0.0)
@@ -367,18 +367,18 @@ void DCModel::step(double dt)
     }
 }
 
-void DCModel::onVisit(tgModelVisitor& r)
+void DC1_2Model::onVisit(tgModelVisitor& r)
 {
     // Example: m_rod->getRigidBody()->dosomething()...
     tgModel::onVisit(r);
 }
 
-const std::vector<tgBasicActuator*>& DCModel::getAllMuscles() const
+const std::vector<tgBasicActuator*>& DC1_2Model::getAllMuscles() const
 {
     return allMuscles;
 }
 
-void DCModel::teardown()
+void DC1_2Model::teardown()
 {
     notifyTeardown();
     tgModel::teardown();

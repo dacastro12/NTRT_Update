@@ -79,9 +79,9 @@ namespace
        200.0,     // damping (mass / sec)
        10.0,     // pretension (mass * length / sec^2) //5001
        50,	// knee pretension (500 N = kg*m/s^2 = 50000 kg*cm/s^2) was 500/10
-       10.0,     // triangle_length (length)
-       10.0,     // triangle_height (length)
-       10.0,     // Knee_height (length)
+       10.0,     // triangle_length (edge)
+       10.0,     // triangle_height (width)
+       10.0,     // Knee_height (height)
        0.99,      // friction (unitless)
        0.01,     // rollFriction (unitless)
        0.2,      // restitution (?)	
