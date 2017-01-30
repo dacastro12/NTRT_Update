@@ -69,22 +69,24 @@ namespace
 	 double friction;
         double rollFriction;
         double restitution;
+	double factor;
     } c =
    {
-       0.05,     // density (mass / length^3) was 0.2 assuming kg/cm^3
+       0.00067,     // density (mass / length^3) was 0.2 assuming kg/cm^3
        0.0,     // density
-       0.15,     // radius (length)
-       0.15,	// radiusB
-       300.0,   // stiffness (mass / sec^2)
+       0.3175,     // radius (length) 0.25"= 0.635cm (diameter)
+       0.3175,	// radiusB
+       110.236,   // stiffness (mass / sec^2)(N/cm)
        200.0,     // damping (mass / sec)
-       10.0,     // pretension (mass * length / sec^2) //5001
-       50,	// knee pretension (500 N = kg*m/s^2 = 50000 kg*cm/s^2) was 500/10
-       10.0,     // triangle_length (edge)
+       60,     // pretension (mass * length / sec^2) //5001
+       60,	// knee pretension (500 N = kg*m/s^2 = 50000 kg*cm/s^2) was 500/10
+       10.0,     // triangle_length (----edge)
        10.0,     // triangle_height (width)
        10.0,     // Knee_height (height)
        0.99,      // friction (unitless)
        0.01,     // rollFriction (unitless)
-       0.2,      // restitution (?)	
+       0.2,      // restitution (?)
+       5.08,	//factor (size factor to physical model)used in edge now	
   };
 } // namespace
 
@@ -107,54 +109,54 @@ void DCModel::addNodes(tgStructure& tetra,
     //bottom origin
     tetra.addNode(0,0,0);//0
     // bottom front
-    tetra.addNode(0, 0, 1.75); // 1
+    tetra.addNode(0, 0, 1.75*edge); // 1
     // bottom left
-    tetra.addNode( 1.75, 0, 0); // 2
+    tetra.addNode( 1.75*edge, 0, 0); // 2
     // bottom back
-    tetra.addNode(0, 0, -1.75); // 3
+    tetra.addNode(0, 0, -1.75*edge); // 3
     // bottom right
-    tetra.addNode(-1.75, 0, 0); //4
+    tetra.addNode(-1.75*edge, 0, 0); //4
     //lower knee joint origin
-    tetra.addNode(0, 0.9*height, 0);//5
+    tetra.addNode(0, 0.9*height*edge, 0);//5
     //knee joint left
-    tetra.addNode(2.5, height+2.75, 0); // 6 Was 1.5 for x
+    tetra.addNode(2.5*edge, (height+2.75)*edge, 0); // 6 Was 1.5 for x
     //knee joint right
-    tetra.addNode( -2.5, height+2.75, 0); // 7 Was -1.5 for x
+    tetra.addNode( -2.5*edge, (height+2.75)*edge, 0); // 7 Was -1.5 for x
     
 
 
 //femur
     // knee joint front (patella)
-    tetra.addNode(0, height, 2.5); // 8
+    tetra.addNode(0, height*edge, 2.5*edge); // 8
     // knee joint left
-    tetra.addNode(2.5, height, -2.5); //9 Was 1.25 for x and -z
+    tetra.addNode(2.5*edge, height*edge, -2.5*edge); //9 Was 1.25 for x and -z
     // knee joint right
-    tetra.addNode(-2.5, height, -2.5); //10 Was 1.25 for -x and -z
+    tetra.addNode(-2.5*edge, height*edge, -2.5*edge); //10 Was 1.25 for -x and -z
     // knee joint origin
-    tetra.addNode(0, height+2.75, 0); // 11
+    tetra.addNode(0, (height+2.75)*edge, 0); // 11
     // top origin
-    tetra.addNode( 0, (height*2)+2, 0); // 12
+    tetra.addNode( 0, ((height*2)+2)*edge, 0); // 12
     // top front
-    tetra.addNode(0, (height*2)+2, 2); // 13
+    tetra.addNode(0, ((height*2)+2)*edge, 2*edge); // 13
     // top front left
-    tetra.addNode(1, (height*2)+2, 2);// 14
+    tetra.addNode(1*edge, ((height*2)+2)*edge, 2*edge);// 14
     //top back left
-    tetra.addNode(1, (height*2)+2, -2); //15
+    tetra.addNode(1*edge, ((height*2)+2)*edge, -2*edge); //15
     // top back 
-    tetra.addNode(0, (height*2)+2, -2); // 16
+    tetra.addNode(0, ((height*2)+2)*edge, -2*edge); // 16
     // top back right
-    tetra.addNode( -1, (height*2)+2, -2); // 17
+    tetra.addNode( -1*edge, ((height*2)+2)*edge, -2*edge); // 17
     // top front right
-    tetra.addNode(-1, (height*2)+2, 2); // 18
+    tetra.addNode(-1*edge, ((height*2)+2)*edge, 2*edge); // 18
     // top right mid
-    tetra.addNode(-1, (height*2)+2, 0);//19
+    tetra.addNode(-1*edge, ((height*2)+2)*edge, 0);//19
     // top left mid
-    tetra.addNode(1, (height*2)+2, 0);//20
+    tetra.addNode(1*edge, ((height*2)+2)*edge, 0);//20
 
 //new point 
    // lower leg attachment point.....
-    tetra.addNode( 0, height*0.7, 0); //21
-    tetra.addNode(0, (height*(0.7)), -0.175); //22
+    tetra.addNode( 0, (height*0.7)*edge, 0); //21
+    tetra.addNode(0, (height*(0.7))*edge, -0.175*edge); //22
 
 }
 
@@ -312,7 +314,7 @@ void DCModel::setup(tgWorld& world)
   //  tetra.addChild(tB);
 	
     // Add nodes to the structure
-    addNodes(tetra, c.triangle_length, c.triangle_height, c.Knee_height);
+    addNodes(tetra, c.factor, c.triangle_height, c.Knee_height);
 
     // Add rods to the structure
     addPairs(tetra);
