@@ -99,7 +99,7 @@ void DCController::onStep(DCModel& subject, double dt) {
 
     // EE Tracker
     btVector3 ee = endEffectorCOM(subject);
-    std::cout << ee.getX() << " " << ee.getY() << " " << ee.getZ() << std::endl;
+    std::cout << m_totalTime << " " << ee.getX() << " " << ee.getY() << " " << ee.getZ() << std::endl;
 }
  
 void DCController::setFlexionTargetLength(DCModel& subject, double dt) {
