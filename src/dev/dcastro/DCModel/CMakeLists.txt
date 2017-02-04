@@ -11,5 +11,5 @@ add_executable(AppDCModel
     DCModel.cpp
     DCController.cpp
     AppDCModel.cpp
-) 
+    ) 
 

@@ -115,46 +115,46 @@ void HungControlTFModel::addNodes(tgStructure& tetra,
     // bottom right
     tetra.addNode(-1.75, 0, 0); //4
     //lower knee joint origin
-    tetra.addNode(0, 0.9*height, 0);//5
+    tetra.addNode(0, height, 0);//5
     //knee joint left
-    tetra.addNode(2.5, height+2.75, 0); // 6 Was 1.5 for x
+    tetra.addNode(1.5, height+2, 0); // 6 Was 1.5 for x
     //knee joint right
-    tetra.addNode( -2.5, height+2.75, 0); // 7 Was -1.5 for x
+    tetra.addNode( -1.5, height+2, 0); // 7 Was -1.5 for x
     
 
 
 //femur
     // knee joint front (patella)
-    tetra.addNode(0, height, 2.5); // 8
+    tetra.addNode(0, height+2, 2); // 8
     // knee joint left
-    tetra.addNode(2.5, height, -2.5); //9 Was 1.25 for x and -z
+    tetra.addNode(1.25, height+2, -1.25); //9 Was 1.25 for x and -z
     // knee joint right
-    tetra.addNode(-2.5, height, -2.5); //10 Was 1.25 for -x and -z
+    tetra.addNode(-1.25, height+2, -1.25); //10 Was 1.25 for -x and -z
     // knee joint origin
-    tetra.addNode(0, height+2.75, 0); // 11
+    tetra.addNode(0, height+4, 0); // 11
     // top origin
-    tetra.addNode( 0, (height*2)+2, 0); // 12
+    tetra.addNode( 0, (height*2)+4, 0); // 12
     // top front
-    tetra.addNode(0, (height*2)+2, 2); // 13
+    tetra.addNode(0, (height*2)+4, 2); // 13
     // top front left
-    tetra.addNode(1, (height*2)+2, 2);// 14
+    tetra.addNode(1, (height*2)+4, 2);// 14
     //top back left
-    tetra.addNode(1, (height*2)+2, -2); //15
+    tetra.addNode(1, (height*2)+4, -2); //15
     // top back 
-    tetra.addNode(0, (height*2)+2, -2); // 16
+    tetra.addNode(0, (height*2)+4, -2); // 16
     // top back right
-    tetra.addNode( -1, (height*2)+2, -2); // 17
+    tetra.addNode( -1, (height*2)+4, -2); // 17
     // top front right
-    tetra.addNode(-1, (height*2)+2, 2); // 18
+    tetra.addNode(-1, (height*2)+4, 2); // 18
     // top right mid
-    tetra.addNode(-1, (height*2)+2, 0);//19
+    tetra.addNode(-1, (height*2)+4, 0);//19
     // top left mid
-    tetra.addNode(1, (height*2)+2, 0);//20
+    tetra.addNode(1, (height*2)+4, 0);//20
 
 //new point 
    // lower leg attachment point.....
-    tetra.addNode( 0, (height*(0.7)), 0); //21
-    tetra.addNode(0, (height*(0.7)), -0.175); //22
+    tetra.addNode( 0, (height*(0.9)), 0); //21
+    tetra.addNode(0, (height*(0.9)), -0.175); //22
 
 }
 

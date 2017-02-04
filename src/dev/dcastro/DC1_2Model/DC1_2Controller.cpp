@@ -48,7 +48,7 @@ DC1_2Controller::DC1_2Controller(const double initialLength, double timestep) :
 //Fetch all the muscles and set their preferred length
 void DC1_2Controller::onSetup(DC1_2Model& subject) {
 	this->m_totalTime=0.0;
-    const double flexion_length = 15;
+    const double flexion_length = 80; //15
     //const double brachioradialis_length = 12;
     //const double anconeus_length        = 6;
     //const double supportstring_length   = 0.5;
@@ -99,8 +99,8 @@ void DC1_2Controller::onStep(DC1_2Model& subject, double dt) {
 }
  
 void DC1_2Controller::setFlexionTargetLength(DC1_2Model& subject, double dt) {
-    const double mean_flexion_length = 15; //TODO: define according to vars
-    double newLength = 10;
+    const double mean_flexion_length = 70; //TODO: define according to vars
+    double newLength = 50;
     const double amplitude    = mean_flexion_length/1;
     //const double angular_freq = 2;
     //const double phase = 0;
@@ -113,8 +113,8 @@ void DC1_2Controller::setFlexionTargetLength(DC1_2Model& subject, double dt) {
         cout <<"t: " << pMuscle->getCurrentLength() << endl;
         //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + DC1_2Offset;
         newLength = DC1_2Offset - amplitude*m_totalTime/5;
-        if(newLength < DC1_2Offset/8) {
-            newLength = DC1_2Offset/8;
+        if(newLength < DC1_2Offset/2) {
+            newLength = DC1_2Offset/2;
         }
 
         if(m_totalTime > 5) {
@@ -216,8 +216,8 @@ void DC1_2Controller::updateActions(DC1_2Model& subject, double dt) {
 //Scale actions according to Min and Max length of muscles.
 vector< vector <double> > DC1_2Controller::transformActions(vector< vector <double> > actions)
 {
-	double min=6;
-	double max=11;
+	double min=40;
+	double max=80;
 	double range=max-min;
 	double scaledAct;
 	for(unsigned i=0;i<actions.size();i++) {
