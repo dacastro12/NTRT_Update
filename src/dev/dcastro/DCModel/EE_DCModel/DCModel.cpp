@@ -26,22 +26,19 @@
 // This module
 #include "DCModel.h"
 // This library
-#include "core/tgRod.h"
-//#include "core/tgSphere.h"
 #include "core/tgBasicActuator.h"
+#include "core/tgRod.h"
+#include "core/abstractMarker.h"
 #include "tgcreator/tgBuildSpec.h"
 #include "tgcreator/tgBasicActuatorInfo.h"
-//#include "tgcreator/tgRigidAutoCompound.h"
+#include "tgcreator/tgKinematicContactCableInfo.h"
 #include "tgcreator/tgRodInfo.h"
 #include "tgcreator/tgStructure.h"
 #include "tgcreator/tgStructureInfo.h"
-//#include "tgcreator/tgSphereInfo.h"
-//#include "tgcreator/tgUtil.h"
 // The Bullet Physics library
-#include "btBulletDynamicsCommon.h"
+#include "LinearMath/btVector3.h"
 // The C++ Standard Library
 #include <stdexcept>
-#include <iostream>
 
 /**
  * Anonomous namespace so we don't have to declare the config in
@@ -102,59 +99,59 @@ void DCModel::addNodes(tgStructure& tetra)
 const size_t nNodes = 24;
 //tibia and fibia (Cross Beams)
     //bottom origin
-    nodePositions.push_back(0,0,0);//0
+    nodePositions.push_back(btVector3(0, 0, 0)); // 0
     // bottom front
-    nodePositions.push_back(0, 0, 1.75); // 1
+    nodePositions.push_back(btVector3(0, 0, 1.75)); // 1
     // bottom left
-    nodePositions.push_back( 1.75, 0, 0); // 2
+    nodePositions.push_back(btVector3( 1.75, 0, 0)); // 2
     // bottom back
-    nodePositions.push_back(0, 0, -1.75); // 3
+    nodePositions.push_back(btVector3(0, 0, -1.75)); // 3
     // bottom right
-    nodePositions.push_back(-1.75, 0, 0); //4
+    nodePositions.push_back(btVector3(-1.75, 0, 0)); //4
     //lower knee joint origin
-    nodePositions.push_back(0, 0.9*height, 0);//5
+    nodePositions.push_back(btVector3(0, 0.9*height, 0));//5
     //knee joint left
-    nodePositions.push_back(2.5, height+2.75, 0); // 6 Was 1.5 for x
+    nodePositions.push_back(btVector3(2.5, height+2.75, 0)); // 6 Was 1.5 for x
     //knee joint right
-    nodePositions.push_back( -2.5, height+2.75, 0); // 7 Was -1.5 for x
+    nodePositions.push_back(btVector3( -2.5, height+2.75, 0)); // 7 Was -1.5 for x
     
 
 
 //femur
     // knee joint front (patella)
-    nodePositions.push_back(0, height, 2.5); // 8
+    nodePositions.push_back(btVector3(0, height, 2.5)); // 8
     // knee joint left
-    nodePositions.push_back(2.5, height, -2.5); //9 Was 1.25 for x and -z
+    nodePositions.push_back(btVector3(2.5, height, -2.5)); //9 Was 1.25 for x and -z
     // knee joint right
-    nodePositions.push_back(-2.5, height, -2.5); //10 Was 1.25 for -x and -z
+    nodePositions.push_back(btVector3(-2.5, height, -2.5)); //10 Was 1.25 for -x and -z
     // knee joint origin
-    nodePositions.push_back(0, height+2.75, 0); // 11
+    nodePositions.push_back(btVector3(0, height+2.75, 0)); // 11
     // top origin
-    nodePositions.push_back( 0, (height*2)+2, 0); // 12
+    nodePositions.push_back(btVector3( 0, (height*2)+2, 0)); // 12
     // top front
-    nodePositions.push_back(0, (height*2)+2, 2); // 13
+    nodePositions.push_back(btVector3(0, (height*2)+2, 2)); // 13
     // top front left
-    nodePositions.push_back(1, (height*2)+2, 2);// 14
+    nodePositions.push_back(btVector3(1, (height*2)+2, 2));// 14
     //top back left
-    nodePositions.push_back(1, (height*2)+2, -2); //15
+    nodePositions.push_back(btVector3(1, (height*2)+2, -2)); //15
     // top back 
-    nodePositions.push_back(0, (height*2)+2, -2); // 16
+    nodePositions.push_back(btVector3(0, (height*2)+2, -2)); // 16
     // top back right
-    nodePositions.push_back( -1, (height*2)+2, -2); // 17
+    nodePositions.push_back(btVector3( -1, (height*2)+2, -2)); // 17
     // top front right
-    nodePositions.push_back(-1, (height*2)+2, 2); // 18
+    nodePositions.push_back(btVector3(-1, (height*2)+2, 2)); // 18
     // top right mid
-    nodePositions.push_back(-1, (height*2)+2, 0);//19
+    nodePositions.push_back(btVector3(-1, (height*2)+2, 0));//19
     // top left mid
-    nodePositions.push_back(1, (height*2)+2, 0);//20
+    nodePositions.push_back(btVector3(1, (height*2)+2, 0));//20
 
 //new point 
    // lower leg attachment point.....
-    nodePositions.push_back( 0, height*0.7, 0); //21
-    nodePositions.push_back(0, (height*(0.7)), -0.175); //22
+    nodePositions.push_back(btVector3( 0, height*0.7, 0)); //21
+    nodePositions.push_back(btVector3(0, (height*(0.7)), -0.175)); //22
 
     //bottom origin EE
-    nodePositions.push_back(0,-0.05,0);//23
+    nodePositions.push_back(btVector3(0,-0.05,0));//23
 
 for(size_t i=0;i<nNodes;i++) {
         nodePositions.addNode(nodePositions[i][0],nodePositions[i][1],nodePositions[i][2]);
@@ -192,7 +189,7 @@ void DCModel::addPairs(tgStructure& tetra)
 {
 //fibula and tibia
     // ee tracker
-    tetra.addPair(0, 23, "eeRod");
+    tetra.addPair(0, 23, "eeRod endeffector");
 	//Bottom Base or Ankle
     tetra.addPair( 0,  1, "rod");
     tetra.addPair( 0,  2, "rod");
@@ -330,7 +327,7 @@ void DCModel::setup(tgWorld& world)
 
     // Move the structure so it doesn't start in the ground
     btVector3 offset(0.0, 60.0, 0.0);
-    s.move(offset);
+    tetra.move(offset);
 
     // Create the build spec that uses tags to turn the structure into a real model
     tgBuildSpec spec;

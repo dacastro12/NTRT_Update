@@ -29,9 +29,13 @@
 
 // This library
 #include "core/tgObserver.h"
-#include "learning/Adapters/AnnealAdapter.h" //************What is this?***********8
+#include "controllers/tgTensionController.h"
+#include "learning/Adapters/AnnealAdapter.h"
+#include "core/tgBasicActuator.h"
 #include <vector>
-
+//Bullet Physics
+#include "LinearMath/btScalar.h"
+#include "LinearMath/btVector3.h"
 // Forward declarations
 class DCModel;
 
@@ -54,7 +58,7 @@ public:
    */
   
   // Note that currently this is calibrated for decimeters.
-	DCController(const double prefLength, double timestep);
+	DCController(const double prefLength, double timestep, btVector3 goalTrajectory);
     
   /**
    * Nothing to delete, destructor must be virtual
@@ -81,6 +85,10 @@ private:
  // void setAnconeusTargetLength(ScarrArmModel& subject, double dt);
   void moveAllMotors(DCModel& subject, double dt);
   void updateActions(DCModel& subject, double dt);
+
+  btVector3 initPos;
+  btVector3 trajectory;
+  btVector3 endEffectorCOM(DCModel& subject);
 };
 
 #endif // DC_CONTROLLER_H

@@ -30,6 +30,9 @@
 #include "DCModel.h"
 // This library
 #include "core/tgBasicActuator.h"
+// The Bullet Physics library
+#include "LinearMath/btScalar.h"
+#include "LinearMath/btVector3.h"
 // The C++ Standard Library
 #include <cassert>
 #include <stdexcept>
@@ -40,15 +43,19 @@
 using namespace std;
 
 //Constructor using the model subject and a single pref length for all muscles.
-DCController::DCController(const double initialLength, double timestep) :
+DCController::DCController(const double initialLength, double timestep, btVector3 goalTrajectory) :
     m_initialLengths(initialLength),
     m_totalTime(0.0),
-    dt(timestep) {}
+    dt(timestep) {
+      this->initPos = btVector3(0,0,0); 
+      this->trajectory = btVector3(goalTrajectory.getX(),goalTrajectory.getY(),goalTrajectory.getZ());
+    }
 
 //Fetch all the muscles and set their preferred length
 void DCController::onSetup(DCModel& subject) {
 	this->m_totalTime=0.0;
-    const double flexion_length = 15;
+	this->initPos = endEffectorCOM(subject);
+        const double flexion_length = 15;
     //const double brachioradialis_length = 12;
     //const double anconeus_length        = 6;
     //const double supportstring_length   = 0.5;
@@ -114,7 +121,7 @@ void DCController::setFlexionTargetLength(DCModel& subject, double dt) {
     for (size_t i=0; i<flexion.size(); i++) {
 		tgBasicActuator * const pMuscle = flexion[i];
 		assert(pMuscle != NULL);
-        cout <<"t: " << pMuscle->getCurrentLength() << endl;
+        // cout <<"t: " << pMuscle->getCurrentLength() << endl;
         //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
         newLength = dcOffset - amplitude*m_totalTime/5;
         if(newLength < dcOffset/8) {
@@ -250,4 +257,11 @@ void DCController::applyActions(DCModel& subject, vector< vector <double> > act)
 		//cout<<"i: "<<i<<" length: "<<act[i][0]<<endl;
 		pMuscle->setControlInput(act[i][0]);
 	}
+}
+
+
+btVector3 DCController::endEffectorCOM(DCModel& subject) {
+	const std::vector<tgRod*> endEffector = subject.find<tgRod>("endeffector");
+	assert(!endEffector.empty());
+	return endEffector[0]->centerOfMass();
 }

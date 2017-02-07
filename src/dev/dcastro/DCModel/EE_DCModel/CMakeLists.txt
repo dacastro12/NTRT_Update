@@ -7,7 +7,7 @@ link_libraries(tgcreator
                 terrain 
                 tgOpenGLSupport)
 
-add_executable(AppDCModel
+add_executable(AppDCModel_EE
     DCModel.cpp
     DCController.cpp
     AppDCModel.cpp
