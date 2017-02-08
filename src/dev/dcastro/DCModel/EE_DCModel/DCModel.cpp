@@ -59,10 +59,10 @@ namespace
         double stiffness;
         double damping;
         double pretension;
-	double knee_pretension;
+	double Knee_pretension;
         double triangle_length;
         double triangle_height;
-        double Knee_height;
+        double c.Knee_height;
 	 double friction;
         double rollFriction;
         double restitution;
@@ -78,7 +78,7 @@ namespace
        50,	// knee pretension (500 N = kg*m/s^2 = 50000 kg*cm/s^2) was 500/10
        10.0,     // triangle_length (edge)
        10.0,     // triangle_height (width)
-       10.0,     // Knee_height (height)
+       10.0,     // c.Knee_height (height)
        0.99,      // friction (unitless)
        0.01,     // rollFriction (unitless)
        0.2,      // restitution (?)	
@@ -109,52 +109,52 @@ const size_t nNodes = 24;
     // bottom right
     nodePositions.push_back(btVector3(-1.75, 0, 0)); //4
     //lower knee joint origin
-    nodePositions.push_back(btVector3(0, 0.9*Knee_height, 0));//5
+    nodePositions.push_back(btVector3(0, 0.9*c.Knee_height, 0));//5
     //knee joint left
-    nodePositions.push_back(btVector3(2.5, Knee_height+2.75, 0)); // 6 Was 1.5 for x
+    nodePositions.push_back(btVector3(2.5, c.Knee_height+2.75, 0)); // 6 Was 1.5 for x
     //knee joint right
-    nodePositions.push_back(btVector3( -2.5, Knee_height+2.75, 0)); // 7 Was -1.5 for x
+    nodePositions.push_back(btVector3( -2.5, c.Knee_height+2.75, 0)); // 7 Was -1.5 for x
     
 
 
 //femur
     // knee joint front (patella)
-    nodePositions.push_back(btVector3(0, Knee_height, 2.5)); // 8
+    nodePositions.push_back(btVector3(0, c.Knee_height, 2.5)); // 8
     // knee joint left
-    nodePositions.push_back(btVector3(2.5, Knee_height, -2.5)); //9 Was 1.25 for x and -z
+    nodePositions.push_back(btVector3(2.5, c.Knee_height, -2.5)); //9 Was 1.25 for x and -z
     // knee joint right
-    nodePositions.push_back(btVector3(-2.5, Knee_height, -2.5)); //10 Was 1.25 for -x and -z
+    nodePositions.push_back(btVector3(-2.5, c.Knee_height, -2.5)); //10 Was 1.25 for -x and -z
     // knee joint origin
-    nodePositions.push_back(btVector3(0, Knee_height+2.75, 0)); // 11
+    nodePositions.push_back(btVector3(0, c.Knee_height+2.75, 0)); // 11
     // top origin
-    nodePositions.push_back(btVector3( 0, (Knee_height*2)+2, 0)); // 12
+    nodePositions.push_back(btVector3( 0, (c.Knee_height*2)+2, 0)); // 12
     // top front
-    nodePositions.push_back(btVector3(0, (Knee_height*2)+2, 2)); // 13
+    nodePositions.push_back(btVector3(0, (c.Knee_height*2)+2, 2)); // 13
     // top front left
-    nodePositions.push_back(btVector3(1, (Knee_height*2)+2, 2));// 14
+    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+2, 2));// 14
     //top back left
-    nodePositions.push_back(btVector3(1, (Knee_height*2)+2, -2)); //15
+    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+2, -2)); //15
     // top back 
-    nodePositions.push_back(btVector3(0, (Knee_height*2)+2, -2)); // 16
+    nodePositions.push_back(btVector3(0, (c.Knee_height*2)+2, -2)); // 16
     // top back right
-    nodePositions.push_back(btVector3( -1, (Knee_height*2)+2, -2)); // 17
+    nodePositions.push_back(btVector3( -1, (c.Knee_height*2)+2, -2)); // 17
     // top front right
-    nodePositions.push_back(btVector3(-1, (Knee_height*2)+2, 2)); // 18
+    nodePositions.push_back(btVector3(-1, (c.Knee_height*2)+2, 2)); // 18
     // top right mid
-    nodePositions.push_back(btVector3(-1, (Knee_height*2)+2, 0));//19
+    nodePositions.push_back(btVector3(-1, (c.Knee_height*2)+2, 0));//19
     // top left mid
-    nodePositions.push_back(btVector3(1, (Knee_height*2)+2, 0));//20
+    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+2, 0));//20
 
 //new point 
    // lower leg attachment point.....
-    nodePositions.push_back(btVector3( 0, Knee_height*0.7, 0)); //21
-    nodePositions.push_back(btVector3(0, (Knee_height*(0.7)), -0.175)); //22
+    nodePositions.push_back(btVector3( 0, c.Knee_height*0.7, 0)); //21
+    nodePositions.push_back(btVector3(0, (c.Knee_height*(0.7)), -0.175)); //22
 
     //bottom origin EE
     nodePositions.push_back(btVector3(0,-0.05,0));//23
 
 for(size_t i=0;i<nNodes;i++) {
-        nodePositions.addNode(nodePositions[i][0],nodePositions[i][1],nodePositions[i][2]);
+        nodePositions.addNodes(nodePositions[i][0],nodePositions[i][1],nodePositions[i][2]);
     }
 
 }
@@ -302,10 +302,10 @@ void DCModel::setup(tgWorld& world)
     const tgBasicActuator::Config muscleConfig(c.stiffness, c.damping, c.pretension);
     //welding holders
    // const tgSphere::Config weldingConfigA(0.25, c.densityA);
-    const tgBasicActuator::Config KneeJointMuscleConfig(c.stiffness, c.damping, c.knee_pretension); 
+    const tgBasicActuator::Config KneeJointMuscleConfig(c.stiffness, c.damping, c.c.Knee_pretension); 
    //fixed segment
    /* tgStructure tetraB;
-    addNodesB(tetraB, c.triangle_length, c.triangle_height, c.Knee_height);
+    addNodesB(tetraB, c.triangle_length, c.triangle_height, c.c.Knee_height);
     addPairsB(tetraB);
     tetraB.move(btVector3(0,0.15,0));
 */
