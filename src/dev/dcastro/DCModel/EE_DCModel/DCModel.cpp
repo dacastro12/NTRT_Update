@@ -62,7 +62,7 @@ namespace
 	double Knee_pretension;
         double triangle_length;
         double triangle_height;
-        double c.Knee_height;
+        double Knee_height;
 	 double friction;
         double rollFriction;
         double restitution;
@@ -154,7 +154,7 @@ const size_t nNodes = 24;
     nodePositions.push_back(btVector3(0,-0.05,0));//23
 
 for(size_t i=0;i<nNodes;i++) {
-        nodePositions.addNodes(nodePositions[i][0],nodePositions[i][1],nodePositions[i][2]);
+        tetra.addNode(nodePositions[i][0],nodePositions[i][1],nodePositions[i][2]);
     }
 
 }
@@ -302,7 +302,7 @@ void DCModel::setup(tgWorld& world)
     const tgBasicActuator::Config muscleConfig(c.stiffness, c.damping, c.pretension);
     //welding holders
    // const tgSphere::Config weldingConfigA(0.25, c.densityA);
-    const tgBasicActuator::Config KneeJointMuscleConfig(c.stiffness, c.damping, c.c.Knee_pretension); 
+    const tgBasicActuator::Config KneeJointMuscleConfig(c.stiffness, c.damping, c.Knee_pretension); 
    //fixed segment
    /* tgStructure tetraB;
     addNodesB(tetraB, c.triangle_length, c.triangle_height, c.c.Knee_height);
