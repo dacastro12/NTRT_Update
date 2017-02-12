@@ -26,21 +26,17 @@
 // This module
 #include "HungControlTFModel.h"
 // This library
-#include "core/tgRod.h"
-//#include "core/tgSphere.h"
 #include "core/tgBasicActuator.h"
+#include "core/tgRod.h"
+#include "core/abstractMarker.h"
 #include "tgcreator/tgBuildSpec.h"
 #include "tgcreator/tgBasicActuatorInfo.h"
-#include "tgcreator/tgBasicContactCableInfo.h"
-#include "LinearMath/btVector3.h"
-//#include "tgcreator/tgRigidAutoCompound.h"
+#include "tgcreator/tgKinematicContactCableInfo.h"
 #include "tgcreator/tgRodInfo.h"
 #include "tgcreator/tgStructure.h"
 #include "tgcreator/tgStructureInfo.h"
-//#include "tgcreator/tgSphereInfo.h"
-//#include "tgcreator/tgUtil.h"
 // The Bullet Physics library
-#include "btBulletDynamicsCommon.h"
+#include "LinearMath/btVector3.h"
 // The C++ Standard Library
 #include <stdexcept>
 #include <iostream>
@@ -100,65 +96,69 @@ HungControlTFModel::~HungControlTFModel()
 {
 }
 
-void HungControlTFModel::addNodes(tgStructure& tetra,
-                            double edge,
-                            double width,
-                            double height)
+void HungControlTFModel::addNodes(tgStructure& tetra)
 {
-
+    const size_t nNodes = 24;
 //tibia and fibia (Cross Beams)
     //bottom origin
-    tetra.addNode(0,0,0);//0
+    nodePositions.push_back(btVector3(0,0,0));//0
     // bottom front
-    tetra.addNode(0, 0, 1.75); // 1
+    nodePositions.push_back(btVector3(0, 0, 1.75)); // 1
     // bottom left
-    tetra.addNode( 1.75, 0, 0); // 2
+    nodePositions.push_back(btVector3( 1.75, 0, 0)); // 2
     // bottom back
-    tetra.addNode(0, 0, -1.75); // 3
+    nodePositions.push_back(btVector3(0, 0, -1.75)); // 3
     // bottom right
-    tetra.addNode(-1.75, 0, 0); //4
+    nodePositions.push_back(btVector3(-1.75, 0, 0)); //4
     //lower knee joint origin
-    tetra.addNode(0, height, 0);//5
+    nodePositions.push_back(btVector3(0, c.Knee_height, 0));//5
     //knee joint left
-    tetra.addNode(1.5, height+2, 0); // 6 Was 1.5 for x
+    nodePositions.push_back(btVector3(1.5, c.Knee_height+2, 0)); // 6 Was 1.5 for x
     //knee joint right
-    tetra.addNode( -1.5, height+2, 0); // 7 Was -1.5 for x
+    nodePositions.push_back(btVector3( -1.5, c.Knee_height+2, 0)); // 7 Was -1.5 for x
     
 
 
 //femur
     // knee joint front (patella)
-    tetra.addNode(0, height+2, 2); // 8
+    nodePositions.push_back(btVector3(0, c.Knee_height+2, 2)); // 8
     // knee joint left
-    tetra.addNode(1.25, height+2, -1.25); //9 Was 1.25 for x and -z
+    nodePositions.push_back(btVector3(1.25, c.Knee_height+2, -1.25)); //9 Was 1.25 for x and -z
     // knee joint right
-    tetra.addNode(-1.25, height+2, -1.25); //10 Was 1.25 for -x and -z
+    nodePositions.push_back(btVector3(-1.25, c.Knee_height+2, -1.25)); //10 Was 1.25 for -x and -z
     // knee joint origin
-    tetra.addNode(0, height+4, 0); // 11
+    nodePositions.push_back(btVector3(0, c.Knee_height+4, 0)); // 11
     // top origin
-    tetra.addNode( 0, (height*2)+4, 0); // 12
+    nodePositions.push_back(btVector3( 0, (c.Knee_height*2)+4, 0)); // 12
     // top front
-    tetra.addNode(0, (height*2)+4, 2); // 13
+    nodePositions.push_back(btVector3(0, (c.Knee_height*2)+4, 2)); // 13
     // top front left
-    tetra.addNode(1, (height*2)+4, 2);// 14
+    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+4, 2));// 14
     //top back left
-    tetra.addNode(1, (height*2)+4, -2); //15
+    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+4, -2)); //15
     // top back 
-    tetra.addNode(0, (height*2)+4, -2); // 16
+    nodePositions.push_back(btVector3(0, (c.Knee_height*2)+4, -2)); // 16
     // top back right
-    tetra.addNode( -1, (height*2)+4, -2); // 17
+    nodePositions.push_back(btVector3( -1, (c.Knee_height*2)+4, -2)); // 17
     // top front right
-    tetra.addNode(-1, (height*2)+4, 2); // 18
+    nodePositions.push_back(btVector3(-1, (c.Knee_height*2)+4, 2)); // 18
     // top right mid
-    tetra.addNode(-1, (height*2)+4, 0);//19
+    nodePositions.push_back(btVector3(-1, (c.Knee_height*2)+4, 0));//19
     // top left mid
-    tetra.addNode(1, (height*2)+4, 0);//20
+    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+4, 0));//20
 
 //new point 
    // lower leg attachment point.....
-    tetra.addNode( 0, (height*(0.9)), 0); //21
-    tetra.addNode(0, (height*(0.9)), -0.175); //22
+    nodePositions.push_back(btVector3( 0, (c.Knee_height*(0.9)), 0)); //21
+    nodePositions.push_back(btVector3(0, (c.Knee_height*(0.9)), -0.175)); //22
 
+
+    // Bottom Origin EE 
+    nodePositions.push_back(btVector3(0, -0.05, 0)); // 23
+
+    for(size_t i=0;i<nNodes;i++) {
+        tetra.addNode(nodePositions[i][0],nodePositions[i][1],nodePositions[i][2]);
+    }
 }
 
 /*void HungControlTFModel::addNodesB(tgStructure& tetra,
@@ -189,6 +189,8 @@ void HungControlTFModel::addNodes(tgStructure& tetra,
 */
 void HungControlTFModel::addPairs(tgStructure& tetra)
 {
+    // ee tracker
+    tetra.addPair(0, 23, "eeRod endeffector");
 //fibula and tibia
 	//Bottom Base or Ankle
     tetra.addPair( 0,  1, "rod");
@@ -298,6 +300,7 @@ void HungControlTFModel::setup(tgWorld& world)
     const tgRod::Config rodConfigA(c.radiusA, c.densityA, c.friction, c.rollFriction, c.restitution);
     const tgRod::Config rodConfigB(c.radiusB, c.densityB, c.friction, c.rollFriction, c.restitution);//Massless rods for base holder
     const tgBasicActuator::Config muscleConfig(c.stiffness, c.damping, c.pretension);
+    const tgRod::Config eeConfig(c.radiusA, c.densityA/4/*c.density*/, c.friction, c.rollFriction, c.restitution);
     //welding holders
    // const tgSphere::Config weldingConfigA(0.25, c.densityA);
     const tgBasicActuator::Config KneeJointMuscleConfig(c.stiffness, c.damping, c.knee_pretension); 
@@ -315,7 +318,7 @@ void HungControlTFModel::setup(tgWorld& world)
   //  tetra.addChild(tB);
 	
     // Add nodes to the structure
-    addNodes(tetra, c.triangle_length, c.triangle_height, c.Knee_height);
+    addNodes(tetra);
 
     // Add rods to the structure
     addPairs(tetra);
@@ -324,7 +327,8 @@ void HungControlTFModel::setup(tgWorld& world)
     addMuscles(tetra);
 
     // Move the structure so it doesn't start in the ground
-    tetra.move(btVector3(0, 10, 0));
+    btVector3 offset(0.0, 10.0, 0.0);
+    tetra.move(offset);
 
     // Create the build spec that uses tags to turn the structure into a real model
     tgBuildSpec spec;
@@ -337,6 +341,8 @@ void HungControlTFModel::setup(tgWorld& world)
     spec.addBuilder("joint", new tgBasicActuatorInfo(KneeJointMuscleConfig));
     //spec.addBuilder("Bicep Femoris", new tgBasicActuatorInfo(muscleConfig));
     //spec.addBuilder("sphere", new tgSphereInfo(weldingConfigA));
+    // EE TRACKER SPECIFICATIONS
+    spec.addBuilder("eeRod", new tgRodInfo(eeConfig));
 
     // Create your structureInfo
     tgStructureInfo structureInfo(tetra, spec);

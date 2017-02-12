@@ -30,6 +30,7 @@
 // This library
 #include "core/tgModel.h"
 #include "core/tgSubject.h"
+#include "core/tgRod.h"
 // The C++ Standard Library
 #include <vector>
 #include <map>
@@ -112,10 +113,7 @@ private:
      * @param[in] width: the Z distance of the base triangle
      * @param[in] height: the Y distance along the axis of the prism
      */
-    static void addNodes(tgStructure& tetra,
-                            double edge,
-                            double width,
-                            double height);
+    void addNodes(tgStructure& tetra);
 
    /* static void addNodesB(tgStructure& tetra,
                             double edge,
@@ -136,7 +134,7 @@ private:
      * the relevant nodes. Rewrite this function for your own models.
      * @param[in] s A tgStructure that we're building into
      */
-    static void addMuscles(tgStructure& tetra);
+    void addMuscles(tgStructure& tetra);
 
 private:
     /**
@@ -144,6 +142,7 @@ private:
      * through setup when it is filled using tgModel's find methods
      */
     std::vector<tgBasicActuator*> allMuscles;
+    std::vector<btVector3> nodePositions;
 };
 
 #endif  // HungCONTROL_KNEE_MODEL_H

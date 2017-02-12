@@ -33,9 +33,15 @@
 #include <vector>
 
 #include "core/tgObserver.h"
+#include "controllers/tgTensionController.h"
+#include "core/tgBasicActuator.h"
 #include "learning/Adapters/AnnealAdapter.h"
 #include "learning/Configuration/configuration.h"
 #include "learning/AnnealEvolution/AnnealEvolution.h"
+
+//Bullet Physics
+#include "LinearMath/btScalar.h"
+#include "LinearMath/btVector3.h"
 
 // Forward declarations
 class tgBasicAcutator;
@@ -62,7 +68,7 @@ public:
    */
   
   // Note that currently this is calibrated for decimeters.
-	HungControlTFController(const double prefLength, double timestep);
+	HungControlTFController(const double prefLength, double timestep, btVector3 goalTrajectory);
     
   /**
    * Nothing to delete, destructor must be virtual
@@ -93,6 +99,9 @@ private:
   void updateActions(HungControlTFModel& subject, double dt);
   double totalEnergySpent(HungControlTFModel& subject); 
 
+  btVector3 initPos;
+  btVector3 trajectory;
+  btVector3 endEffectorCOM(HungControlTFModel& subject);
         /** Difference in position between initPosition and finalPosition
          * of subject */
 //        double displacement(HungControlTFModel& subject);

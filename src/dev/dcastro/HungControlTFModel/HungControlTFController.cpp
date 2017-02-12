@@ -37,6 +37,10 @@
 #include <cmath>
 #include <string>
 
+// The Bullet Physics library
+#include "LinearMath/btScalar.h"
+#include "LinearMath/btVector3.h"
+
 // Packages for TotalEnergySpent function
 #include "learning/Configuration/configuration.h"
 #include "learning/AnnealEvolution/AnnealEvolution.h"
@@ -49,10 +53,13 @@
 using namespace std;
 
 //Constructor using the model subject and a single pref length for all muscles.
-HungControlTFController::HungControlTFController(const double initialLength, double timestep) :
+HungControlTFController::HungControlTFController(const double initialLength, double timestep, btVector3 goalTrajectory) :
     m_initialLengths(initialLength),
     m_totalTime(0.0),
-    dt(timestep) {}
+    dt(timestep) {
+      this->initPos = btVector3(0,0,0); 
+      this->trajectory = btVector3(goalTrajectory.getX(),goalTrajectory.getY(),goalTrajectory.getZ());
+    }
 
 //Fetch all the muscles and set their preferred length
 void HungControlTFController::onSetup(HungControlTFModel& subject) {
@@ -105,6 +112,10 @@ void HungControlTFController::onStep(HungControlTFModel& subject, double dt) {
  //   setAnconeusTargetLength(subject, dt);        //yaw
     moveAllMotors(subject, dt);
     //updateActions(dt);
+
+    // EE Tracker
+    btVector3 ee = endEffectorCOM(subject);
+    std::cout << m_totalTime << " " << ee.getX() << " " << ee.getY() << " " << ee.getZ() << std::endl;
 }
  
 void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject, double dt) {
@@ -321,4 +332,9 @@ double HungControlTFController::totalEnergySpent(HungControlTFModel& subject) {
     cout << totalEnergySpent << endl;
 }
 
+btVector3 HungControlTFController::endEffectorCOM(HungControlTFModel& subject) {
+	const std::vector<tgRod*> endEffector = subject.find<tgRod>("endeffector");
+	assert(!endEffector.empty());
+	return endEffector[0]->centerOfMass();
+}
 
