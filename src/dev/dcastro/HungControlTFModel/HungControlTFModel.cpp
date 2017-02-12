@@ -31,6 +31,8 @@
 #include "core/tgBasicActuator.h"
 #include "tgcreator/tgBuildSpec.h"
 #include "tgcreator/tgBasicActuatorInfo.h"
+#include "tgcreator/tgBasicContactCableInfo.h"
+#include "LinearMath/btVector3.h"
 //#include "tgcreator/tgRigidAutoCompound.h"
 #include "tgcreator/tgRodInfo.h"
 #include "tgcreator/tgStructure.h"
@@ -42,7 +44,6 @@
 // The C++ Standard Library
 #include <stdexcept>
 #include <iostream>
-
 /**
  * Anonomous namespace so we don't have to declare the config in
  * the header.
@@ -69,6 +70,7 @@ namespace
 	 double friction;
         double rollFriction;
         double restitution;
+	bool hist;
     } c =
    {
        0.05,     // density (mass / length^3) was 0.2 assuming kg/cm^3
@@ -85,7 +87,8 @@ namespace
        0.99,      // friction (unitless)
        0.01,     // rollFriction (unitless)
        0.2,      // restitution (?)	
-  };
+	1, // history logging (boolean) 
+ };
 } // namespace
 
 HungControlTFModel::HungControlTFModel() :

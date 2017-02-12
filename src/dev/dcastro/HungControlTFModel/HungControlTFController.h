@@ -32,6 +32,14 @@
 #include "learning/Adapters/AnnealAdapter.h" //************What is this?***********8
 #include <vector>
 
+#include "core/tgObserver.h"
+#include "learning/Adapters/AnnealAdapter.h"
+#include "learning/Configuration/configuration.h"
+#include "learning/AnnealEvolution/AnnealEvolution.h"
+
+// Forward declarations
+class tgBasicAcutator;
+
 // Forward declarations
 class HungControlTFModel;
 
@@ -65,6 +73,8 @@ public:
     
   virtual void onStep(HungControlTFModel& subject, double dt);
 
+  virtual void onTeardown(HungControlTFModel& subject);
+
 protected:
 
   virtual vector< vector <double> > transformActions(vector< vector <double> > act);
@@ -81,6 +91,11 @@ private:
  // void setAnconeusTargetLength(ScarrArmModel& subject, double dt);
   void moveAllMotors(HungControlTFModel& subject, double dt);
   void updateActions(HungControlTFModel& subject, double dt);
+  double totalEnergySpent(HungControlTFModel& subject); 
+
+        /** Difference in position between initPosition and finalPosition
+         * of subject */
+//        double displacement(HungControlTFModel& subject);
 };
 
 #endif // HUNGCONTROLTF_CONTROLLER_H

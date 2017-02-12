@@ -34,6 +34,15 @@
 #include <cassert>
 #include <stdexcept>
 #include <vector>
+#include <cmath>
+#include <string>
+
+// Packages for TotalEnergySpent function
+#include "learning/Configuration/configuration.h"
+#include "learning/AnnealEvolution/AnnealEvolution.h"
+#include "learning/Adapters/AnnealAdapter.h"
+#include "helpers/FileHelpers.h"
+
 
 # define M_PI 3.14159265358979323846 
 
@@ -52,8 +61,8 @@ void HungControlTFController::onSetup(HungControlTFModel& subject) {
     //const double brachioradialis_length = 12;
     //const double anconeus_length        = 6;
     //const double supportstring_length   = 0.5;
-
-	const std::vector<tgBasicActuator*> flexion = subject.find<tgBasicActuator>("flexion");
+    double dt = 0.0001;
+    const std::vector<tgBasicActuator*> flexion = subject.find<tgBasicActuator>("flexion");
 	//const std::vector<tgBasicActuator*> anconeus        = subject.find<tgBasicActuator>("anconeus");
 	//const std::vector<tgBasicActuator*> brachioradialis = subject.find<tgBasicActuator>("brachioradialis");
 	//const std::vector<tgBasicActuator*> supportstrings  = subject.find<tgBasicActuator>("support");
@@ -110,7 +119,7 @@ void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject
     for (size_t i=0; i<flexion.size(); i++) {
 		tgBasicActuator * const pMuscle = flexion[i];
 		assert(pMuscle != NULL);
-        cout <<"t: " << pMuscle->getCurrentLength() << endl;
+//        cout <<"t: " << pMuscle->getCurrentLength() << endl;
         //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
         newLength = dcOffset - amplitude*m_totalTime/5;
         if(newLength < dcOffset/8) {
@@ -123,16 +132,16 @@ void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject
 			m_totalTime = 0;
 		}
         }
-        std::cout<<"calculating flexion target length:" << newLength << "\n";
-        std::cout<<"m_totalTime: " << m_totalTime << "\n";
+//        std::cout<<"calculating flexion target length:" << newLength << "\n";
+//        std::cout<<"m_totalTime: " << m_totalTime << "\n";
 		pMuscle->setControlInput(newLength, dt);
-        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
+//        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
     }
 //Need a reset timer or something to get it to work.
   for (size_t i=5; i<flexion.size(); i++) {
 		tgBasicActuator * const pMuscle = flexion[i];
 		assert(pMuscle != NULL);
-        cout <<"t: " << pMuscle->getCurrentLength() << endl;
+//        cout <<"t: " << pMuscle->getCurrentLength() << endl;
         //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
         newLength = dcOffset + amplitude*m_totalTime/5;
         if(newLength < dcOffset/8) {
@@ -142,10 +151,10 @@ void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject
         if(m_totalTime > 10) {
             m_totalTime = 0;
         }
-        std::cout<<"calculating flexion target length:" << newLength << "\n";
-        std::cout<<"m_totalTime: " << m_totalTime << "\n";
+    //    std::cout<<"calculating flexion target length:" << newLength << "\n";
+  //      std::cout<<"m_totalTime: " << m_totalTime << "\n";
 		pMuscle->setControlInput(newLength, dt);
-        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
+//        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
     }
 
 }
@@ -229,6 +238,22 @@ vector< vector <double> > HungControlTFController::transformActions(vector< vect
 	return actions;
 }
 
+//double HungControlTFController::displacement(HungControlTFModel& subject) {
+//    std::vector<double> finalPosition = subject.getBallCOM();
+
+    // 'X' and 'Z' are irrelevant. Both variables measure lateral direction
+    //assert(finalPosition[0] > 0); //Negative y-value indicates a flaw in the simulator that run (tensegrity went 'underground')
+
+//    const double newX = finalPosition[0];
+//    const double newZ = finalPosition[2];
+//    const double oldX = initPosition[0];
+//    const double oldZ = initPosition[2];
+
+//    const double distanceMoved = sqrt((newX-oldX) * (newX-oldX) + 
+//                                      (newZ-oldZ) * (newZ-oldZ));
+//    return distanceMoved;
+//}
+
 //Pick particular muscles (according to the structure's state) and apply the given actions one by one
 void HungControlTFController::applyActions(HungControlTFModel& subject, vector< vector <double> > act)
 {
@@ -247,3 +272,53 @@ void HungControlTFController::applyActions(HungControlTFModel& subject, vector< 
 		pMuscle->setControlInput(act[i][0]);
 	}
 }
+
+// So far, only score used for eventual fitness calculation of an Escape Model
+// is the maximum distance from the origin reached during that subject's episode
+void HungControlTFController::onTeardown(HungControlTFModel& subject) {
+    std::vector<double> scores; //scores[0] == displacement, scores[1] == energySpent
+    //  double distance = displacement(subject);
+    double energySpent = totalEnergySpent(subject);
+
+    //Invariant: For now, scores must be of size 2 (as required by endEpisode())
+    // scores.push_back(distance);
+//    scores.push_back(energySpent);
+
+    std::cout << "Tearing down" << std::endl;
+//    evolutionAdapter.endEpisode(scores);
+
+    // If any of subject's dynamic objects need to be freed, this is the place to do so
+}
+
+// Basically the same as Steve's totalEnergySpent function from Escape_T6Controller
+// with a few modifications
+// 1. It is necessary to turn on bool hist in ""Model.cpp
+// 2. This function needs to be declared in header file
+// 3. Controller contains function, and Model created in HungControlTFModel is taken as parameter.
+// 4. Instead of using getAllMuscles(), we can use find<tgBasicActuator> to determine flexion for Dennis's model
+double HungControlTFController::totalEnergySpent(HungControlTFModel& subject) {
+
+    double totalEnergySpent=0;
+
+  // std::vector<tgBasicActuator* > tmpStrings = subject.getAllMuscles();
+    std::vector<tgBasicActuator*> tmpFlexion = subject.find<tgBasicActuator>("flexion");
+    for(size_t i=0; i<tmpFlexion.size(); i++) {
+        tgSpringCableActuator::SpringCableActuatorHistory stringHist = tmpFlexion[i]->getHistory();
+
+       for(size_t j=1; j<stringHist.tensionHistory.size(); j++) {
+           const double previousTension = stringHist.tensionHistory[j-1];
+            const double previousLength = stringHist.restLengths[j-1];
+            const double currentLength = stringHist.restLengths[j];
+            //TODO: examine this assumption - free spinning motor may require more power         
+            double motorSpeed = (currentLength-previousLength);
+            if(motorSpeed > 0) // Vestigial code
+                motorSpeed = 0;
+            const double workDone = previousTension * motorSpeed;
+            totalEnergySpent += workDone;
+        }
+    }
+    return totalEnergySpent;
+    cout << totalEnergySpent << endl;
+}
+
+
