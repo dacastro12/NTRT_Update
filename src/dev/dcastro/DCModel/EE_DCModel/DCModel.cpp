@@ -66,22 +66,24 @@ namespace
 	 double friction;
         double rollFriction;
         double restitution;
+	double factor;
     } c =
    {
-       0.05,     // density (mass / length^3) was 0.2 assuming kg/cm^3
+        0.00067,     // density (mass / length^3) was 0.2 assuming kg/cm^3
        0.0,     // density
-       0.15,     // radius (length)
-       0.15,	// radiusB
-       300.0,   // stiffness (mass / sec^2)
+       0.3175,     // radius (length) 0.25"= 0.635cm (diameter)
+       0.3175,	// radiusB
+       110.236,   // stiffness (mass / sec^2)(N/cm)
        200.0,     // damping (mass / sec)
-       10.0,     // pretension (mass * length / sec^2) //5001
-       50,	// knee pretension (500 N = kg*m/s^2 = 50000 kg*cm/s^2) was 500/10
-       10.0,     // triangle_length (edge)
+       60,     // pretension (mass * length / sec^2) //5001
+       60,	// knee pretension (500 N = kg*m/s^2 = 50000 kg*cm/s^2) was 500/10
+       10.0,     // triangle_length (----edge)
        10.0,     // triangle_height (width)
-       10.0,     // c.Knee_height (height)
+       10.0,     // Knee_height (height)
        0.99,      // friction (unitless)
        0.01,     // rollFriction (unitless)
-       0.2,      // restitution (?)	
+       0.2,      // restitution (?)
+       5.08,	//factor (size factor to physical model)used in edge now	
   };
 } // namespace
 
@@ -101,57 +103,57 @@ const size_t nNodes = 24;
     //bottom origin
     nodePositions.push_back(btVector3(0, 0, 0)); // 0
     // bottom front
-    nodePositions.push_back(btVector3(0, 0, 1.75)); // 1
+    nodePositions.push_back(btVector3(0, 0, 1.75*c.factor)); // 1
     // bottom left
-    nodePositions.push_back(btVector3( 1.75, 0, 0)); // 2
+    nodePositions.push_back(btVector3( 1.75*c.factor, 0, 0)); // 2
     // bottom back
-    nodePositions.push_back(btVector3(0, 0, -1.75)); // 3
+    nodePositions.push_back(btVector3(0, 0, -1.75*c.factor)); // 3
     // bottom right
-    nodePositions.push_back(btVector3(-1.75, 0, 0)); //4
+    nodePositions.push_back(btVector3(-1.75*c.factor, 0, 0)); //4
     //lower knee joint origin
-    nodePositions.push_back(btVector3(0, 0.9*c.Knee_height, 0));//5
+    nodePositions.push_back(btVector3(0, c.factor*c.Knee_height, 0));//5
     //knee joint left
-    nodePositions.push_back(btVector3(2.5, c.Knee_height+2.75, 0)); // 6 Was 1.5 for x
+    nodePositions.push_back(btVector3(2.5*c.factor, (c.Knee_height+2.5)*c.factor, 0)); // 6 Was 1.5 for x
     //knee joint right
-    nodePositions.push_back(btVector3( -2.5, c.Knee_height+2.75, 0)); // 7 Was -1.5 for x
+    nodePositions.push_back(btVector3( -2.5*c.factor, (c.Knee_height+2.5)*c.factor, 0)); // 7 Was -1.5 for x
     
 
 
 //femur
     // knee joint front (patella)
-    nodePositions.push_back(btVector3(0, c.Knee_height, 2.5)); // 8
+    nodePositions.push_back(btVector3(0, (c.Knee_height+1.5)*c.factor, 2.5*c.factor)); // 8
     // knee joint left
-    nodePositions.push_back(btVector3(2.5, c.Knee_height, -2.5)); //9 Was 1.25 for x and -z
+    nodePositions.push_back(btVector3(2.165*c.factor, (c.Knee_height+1.5)*c.factor, -1.25*c.factor)); //9 Was 1.25 for x and -z
     // knee joint right
-    nodePositions.push_back(btVector3(-2.5, c.Knee_height, -2.5)); //10 Was 1.25 for -x and -z
+    nodePositions.push_back(btVector3(-2.165*c.factor, (c.Knee_height+1.5)*c.factor, -1.25*c.factor)); //10 Was 1.25 for -x and -z
     // knee joint origin
-    nodePositions.push_back(btVector3(0, c.Knee_height+2.75, 0)); // 11
+    nodePositions.push_back(btVector3(0, (c.Knee_height+4)*c.factor, 0)); // 11
     // top origin
-    nodePositions.push_back(btVector3( 0, (c.Knee_height*2)+2, 0)); // 12
+    nodePositions.push_back(btVector3( 0, ((c.Knee_height*2)+4)*c.factor, 0)); // 12
     // top front
-    nodePositions.push_back(btVector3(0, (c.Knee_height*2)+2, 2)); // 13
+    nodePositions.push_back(btVector3(0, ((c.Knee_height*2)+4)*c.factor, 2*c.factor)); // 13
     // top front left
-    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+2, 2));// 14
+    nodePositions.push_back(btVector3(1*c.factor, ((c.Knee_height*2)+4)*c.factor, 2*c.factor));// 14
     //top back left
-    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+2, -2)); //15
+    nodePositions.push_back(btVector3(1*c.factor, ((c.Knee_height*2)+4)*c.factor, -2*c.factor)); //15
     // top back 
-    nodePositions.push_back(btVector3(0, (c.Knee_height*2)+2, -2)); // 16
+    nodePositions.push_back(btVector3(0, ((c.Knee_height*2)+4)*c.factor, -2*c.factor)); // 16
     // top back right
-    nodePositions.push_back(btVector3( -1, (c.Knee_height*2)+2, -2)); // 17
+    nodePositions.push_back(btVector3( -1*c.factor, ((c.Knee_height*2)+4)*c.factor, -2*c.factor)); // 17
     // top front right
-    nodePositions.push_back(btVector3(-1, (c.Knee_height*2)+2, 2)); // 18
+    nodePositions.push_back(btVector3(-1*c.factor, ((c.Knee_height*2)+4)*c.factor, 2*c.factor)); // 18
     // top right mid
-    nodePositions.push_back(btVector3(-1, (c.Knee_height*2)+2, 0));//19
+    nodePositions.push_back(btVector3(-1*c.factor, ((c.Knee_height*2)+4)*c.factor, 0));//19
     // top left mid
-    nodePositions.push_back(btVector3(1, (c.Knee_height*2)+2, 0));//20
+    nodePositions.push_back(btVector3(1*c.factor, ((c.Knee_height*2)+4)*c.factor, 0));//20
 
 //new point 
    // lower leg attachment point.....
-    nodePositions.push_back(btVector3( 0, c.Knee_height*0.7, 0)); //21
-    nodePositions.push_back(btVector3(0, (c.Knee_height*(0.7)), -0.175)); //22
+    nodePositions.push_back(btVector3( 0, (c.Knee_height*0.9)*c.factor, 0)); //21
+    nodePositions.push_back(btVector3(0, (c.Knee_height*0.9)*c.factor, -0.175*c.factor)); //22
 
     //bottom origin EE
-    nodePositions.push_back(btVector3(0,-0.05,0));//23
+    nodePositions.push_back(btVector3(0,-0.05*c.factor,0));//23
 
 for(size_t i=0;i<nNodes;i++) {
         tetra.addNode(nodePositions[i][0],nodePositions[i][1],nodePositions[i][2]);
@@ -326,7 +328,7 @@ void DCModel::setup(tgWorld& world)
     addMuscles(tetra);
 
     // Move the structure so it doesn't start in the ground
-    btVector3 offset(0.0, 60.0, 0.0);
+    btVector3 offset(0.0, 10.0, 0.0);
     tetra.move(offset);
 
     // Create the build spec that uses tags to turn the structure into a real model
