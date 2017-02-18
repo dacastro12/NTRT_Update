@@ -121,7 +121,7 @@ void DCController::setFlexionTargetLength(DCModel& subject, double dt) {
             newLength = 1 + 2*m_totalTime/2;
 		if(m_totalTime >10){
 			m_totalTime = 0;
-		}
+		}                		
         }
         std::cout<<"calculating flexion target length:" << newLength << "\n";
         std::cout<<"m_totalTime: " << m_totalTime << "\n";
@@ -129,24 +129,24 @@ void DCController::setFlexionTargetLength(DCModel& subject, double dt) {
         cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
     }
 //Need a reset timer or something to get it to work.
-  for (size_t i=5; i<flexion.size(); i++) {
-		tgBasicActuator * const pMuscle = flexion[i];
-		assert(pMuscle != NULL);
-        cout <<"t: " << pMuscle->getCurrentLength() << endl;
-        //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
-        newLength = dcOffset + amplitude*m_totalTime/5;
-        if(newLength < dcOffset/8) {
-            newLength = dcOffset/8;
-        }
-
-        if(m_totalTime > 10) {
-            m_totalTime = 0;
-        }
-        std::cout<<"calculating flexion target length:" << newLength << "\n";
-        std::cout<<"m_totalTime: " << m_totalTime << "\n";
-		pMuscle->setControlInput(newLength, dt);
-        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
-    }
+//  for (size_t i=5; i<flexion.size(); i++) {
+//		tgBasicActuator * const pMuscle = flexion[i];
+//		assert(pMuscle != NULL);
+//        cout <<"t: " << pMuscle->getCurrentLength() << endl;
+//        //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
+//        newLength = dcOffset + amplitude*m_totalTime/5;
+//        if(newLength < dcOffset/8) {
+//            newLength = dcOffset/8;
+//        }
+//
+//        if(m_totalTime > 10) {
+//            m_totalTime = 0;
+//        }
+//        std::cout<<"calculating flexion target length:" << newLength << "\n";
+//        std::cout<<"m_totalTime: " << m_totalTime << "\n";
+//		pMuscle->setControlInput(newLength, dt);
+//        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
+//    }
 
 }
 /*

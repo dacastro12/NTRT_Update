@@ -64,7 +64,7 @@ HungControlTFController::HungControlTFController(const double initialLength, dou
 //Fetch all the muscles and set their preferred length
 void HungControlTFController::onSetup(HungControlTFModel& subject) {
 	this->m_totalTime=0.0;
-    const double flexion_length = 80;
+    const double flexion_length = 70;
     //const double brachioradialis_length = 12;
     //const double anconeus_length        = 6;
     //const double supportstring_length   = 0.5;
@@ -119,8 +119,8 @@ void HungControlTFController::onStep(HungControlTFModel& subject, double dt) {
 }
  
 void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject, double dt) {
-    const double mean_flexion_length = 70; //TODO: define according to vars
-    double newLength = 50;
+    const double mean_flexion_length = 100; //TODO: define according to vars
+    double newLength = 29;
     const double amplitude    = mean_flexion_length/1;
     //const double angular_freq = 2;
     //const double phase = 0;
@@ -133,12 +133,12 @@ void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject
 //        cout <<"t: " << pMuscle->getCurrentLength() << endl;
         //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
         newLength = dcOffset - amplitude*m_totalTime/5;
-        if(newLength < dcOffset/2) {
-            newLength = dcOffset/2;
+        if(newLength < dcOffset/3) {
+            newLength = dcOffset/3;
         }
 
         if(m_totalTime > 5) {
-            newLength = 1 + 2*m_totalTime/2;
+            newLength = newLength + amplitude/3;
 		if(m_totalTime >10){
 			m_totalTime = 0;
 		}
@@ -149,24 +149,24 @@ void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject
 //        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
     }
 //Need a reset timer or something to get it to work.
-  for (size_t i=5; i<flexion.size(); i++) {
-		tgBasicActuator * const pMuscle = flexion[i];
-		assert(pMuscle != NULL);
+//  for (size_t i=5; i<flexion.size(); i++) {
+//		tgBasicActuator * const pMuscle = flexion[i];
+//		assert(pMuscle != NULL);
 //        cout <<"t: " << pMuscle->getCurrentLength() << endl;
-        //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
-        newLength = dcOffset + amplitude*m_totalTime/5;
-        if(newLength < dcOffset/8) {
-            newLength = dcOffset/8;
-        }
-
-        if(m_totalTime > 10) {
-            m_totalTime = 0;
-        }
+//        //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
+//        newLength = dcOffset + amplitude*m_totalTime/5;
+//        if(newLength < dcOffset/3) {
+//            newLength = dcOffset/3;
+//        }
+//
+//        if(m_totalTime > 10) {
+//            m_totalTime = 0;
+//        }
     //    std::cout<<"calculating flexion target length:" << newLength << "\n";
   //      std::cout<<"m_totalTime: " << m_totalTime << "\n";
-		pMuscle->setControlInput(newLength, dt);
+//		pMuscle->setControlInput(newLength, dt);
 //        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
-    }
+ //   }
 
 }
 /*
@@ -236,8 +236,8 @@ void HungControlTFController::updateActions(HungControlTFModel& subject, double 
 //Scale actions according to Min and Max length of muscles.
 vector< vector <double> > HungControlTFController::transformActions(vector< vector <double> > actions)
 {
-	double min=40;
-	double max=80;
+	double min=30;
+	double max=70;
 	double range=max-min;
 	double scaledAct;
 	for(unsigned i=0;i<actions.size();i++) {
