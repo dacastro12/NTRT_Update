@@ -149,8 +149,8 @@ const size_t nNodes = 24;
 
 //new point 
    // lower leg attachment point.....
-    nodePositions.push_back(btVector3( 0, (c.Knee_height*0.9)*c.factor, 0)); //21
-    nodePositions.push_back(btVector3(0, (c.Knee_height*0.9)*c.factor, -0.175*c.factor)); //22
+    nodePositions.push_back(btVector3( 0, (c.Knee_height*0.85)*c.factor, 0)); //21
+    nodePositions.push_back(btVector3(0, (c.Knee_height*0.85)*c.factor, -0.175*c.factor)); //22
 
     //bottom origin EE
     nodePositions.push_back(btVector3(0,-0.05*c.factor,0));//23
@@ -288,7 +288,7 @@ void DCModel::addMuscles(tgStructure& tetra)
 	//tetra.addPair(6, 16, "muscle");//Bicep Femoris Long Head
 	//tetra.addPair(5, 16, "muscle"); //Real bicep (3/4)
 	//May need to change geometry of the attachment point 17 and 15 to provide torque to flexion
-	tetra.addPair(16,21, "flexion");//Semimebranosus
+	tetra.addPair(16,22, "flexion");//Semimebranosus
         //tetra.addPair(20, 21, "flexion");//Bicep Femoris Long Head
 
 }

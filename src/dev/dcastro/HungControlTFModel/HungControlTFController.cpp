@@ -114,39 +114,51 @@ void HungControlTFController::onStep(HungControlTFModel& subject, double dt) {
     //updateActions(dt);
 
     // EE Tracker
-    btVector3 ee = endEffectorCOM(subject);
-    std::cout << m_totalTime << " " << ee.getX() << " " << ee.getY() << " " << ee.getZ() << std::endl;
+   // btVector3 ee = endEffectorCOM(subject);
+   // std::cout << m_totalTime << " " << ee.getX() << " " << ee.getY() << " " << ee.getZ() << std::endl;
 }
  
 void HungControlTFController::setFlexionTargetLength(HungControlTFModel& subject, double dt) {
-    const double mean_flexion_length = 100; //TODO: define according to vars
+   const double mean_flexion_length = 100; //TODO: define according to vars
+    double startLength = 75.5; 
+    double MoE = 1000; //0.01GPa = 0.01 10^9 N/m^2 = 1000 N/cm^2 
+    double tension = 0;
+    double area = 0.01979; // area of cord in cm^2
     double newLength = 29;
     const double amplitude    = mean_flexion_length/1;
     //const double angular_freq = 2;
     //const double phase = 0;
-    const double dcOffset     = mean_flexion_length;
+    const double dcOffset = mean_flexion_length;
     const std::vector<tgBasicActuator*> flexion = subject.find<tgBasicActuator>("flexion");
+    //const std::btVector3<DCModel*> stiffness = subject.find<DCModel>("c.stiffness");
 
     for (size_t i=0; i<flexion.size(); i++) {
 		tgBasicActuator * const pMuscle = flexion[i];
 		assert(pMuscle != NULL);
-//        cout <<"t: " << pMuscle->getCurrentLength() << endl;
+        // cout <<"t: " << pMuscle->getCurrentLength() << endl;
         //newLength = amplitude * sin(angular_freq * m_totalTime + phase) + dcOffset;
         newLength = dcOffset - amplitude*m_totalTime/5;
+        tension = ((MoE*((pMuscle->getCurrentLength()) - startLength))/78)*area;
         if(newLength < dcOffset/3) {
             newLength = dcOffset/3;
+		tension = ((MoE*((pMuscle->getCurrentLength()) - startLength))/78)*area;
         }
 
         if(m_totalTime > 5) {
             newLength = newLength + amplitude/3;
+		tension = ((MoE*((pMuscle->getCurrentLength()) - startLength))/78)*area;
 		if(m_totalTime >10){
 			m_totalTime = 0;
 		}
         }
-//        std::cout<<"calculating flexion target length:" << newLength << "\n";
-//        std::cout<<"m_totalTime: " << m_totalTime << "\n";
+        
+	std::cout<< m_totalTime << " " << pMuscle->getCurrentLength() << " " << newLength << " " << tension << " " << pMuscle->getTension() << std::endl;
+	// std::cout<<"calculating flexion target length:" << newLength << "\n";
+	//std::cout<<"Tension:"<< tension << "\n";
+	//std::cout<<"TensionP:"<< pMuscle->getTension()   <<"\n";
+        // std::cout<<"m_totalTime: " << m_totalTime << "\n";
 		pMuscle->setControlInput(newLength, dt);
-//        cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
+        // cout <<"t+1: " << pMuscle->getCurrentLength() << endl;
     }
 //Need a reset timer or something to get it to work.
 //  for (size_t i=5; i<flexion.size(); i++) {
